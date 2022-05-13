@@ -16,7 +16,7 @@ type Movie struct {
 }
 
 type Director struct {
-	Name string `json:"director"`
+	Name string `json:"name"`
 }
 
 func getMovies(w http.ResponseWriter, r *http.Request) {
@@ -26,6 +26,7 @@ func getMovies(w http.ResponseWriter, r *http.Request) {
 func addMovie(w http.ResponseWriter, r *http.Request) {
 	var m Movie
 	json.NewDecoder(r.Body).Decode(&m)
+	movies = append(movies, m)
 	fmt.Fprintf(w, "movie: %+v", m)
 }
 
@@ -40,14 +41,25 @@ func getMovie(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func deleteMovie(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	fmt.Fprint(w, "get movie\n")
+	for idx, ele := range movies {
+		if strconv.Itoa(ele.Id) == vars["id"] {
+			movies = append(movies[:idx], movies[idx+1:]...)
+		}
+	}
+}
+
 var movies []Movie
 
 func main() {
 	movies = append(movies, Movie{1001, "Rush", &Director{"Chan"}})
+	movies = append(movies, Movie{1002, "Panda", &Director{"Lem"}})
 	r := mux.NewRouter()
 	r.HandleFunc("/movies", getMovies).Methods("GET")
-	r.HandleFunc("/movies", addMovie).Methods("POST")
 	r.HandleFunc("/movies/{id}", getMovie).Methods("GET")
-	r.HandleFunc("/movies/{id}", getMovies).Methods("DELETE")
-	http.ListenAndServe(":8080", r)
+	r.HandleFunc("/movies", addMovie).Methods("POST")
+	r.HandleFunc("/movies/{id}", deleteMovie).Methods("DELETE")
+	http.ListenAndServe(":2022", r)
 }
