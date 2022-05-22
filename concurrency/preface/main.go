@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"sync"
+	"time"
 	_ "time"
 )
 
@@ -27,6 +28,7 @@ func mux() {
 		value++
 		memoryAccess.Unlock()
 	}()
+	time.Sleep(time.Microsecond)
 	memoryAccess.Lock()
 	if value == 0 {
 		fmt.Printf("the value is %v.\n", value)
