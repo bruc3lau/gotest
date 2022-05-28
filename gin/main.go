@@ -18,7 +18,9 @@ func main() {
 }
 
 func getWeapon(c *gin.Context) {
-	keys := c.Keys
-	a := keys["type"]
-	fmt.Println(a)
+	weaponType := c.Query("type")
+	fmt.Println(weaponType)
+	c.JSON(200, gin.H{
+		"your": weaponType,
+	})
 }
